@@ -15,6 +15,6 @@ galaxy_info:
   - web
 
 dependencies:
- - FrogyYen/frogy.centos7-nginx
- - FrogyYen/frogy.centos7-mariadb
- - FrogyYen/frogy.centos7-php7
+ - { role: FrogyYen/frogy.centos7-nginx }
+ - { role: FrogyYen/frogy.centos7-mariadb }
+ - { role: FrogyYen/frogy.centos7-php7 }
