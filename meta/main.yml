@@ -14,7 +14,4 @@ galaxy_info:
   - development
   - web
 
-dependencies:
- - { role: frogy.centos7-nginx }
- - { role: frogy.centos7-mariadb }
- - { role: frogy.centos7-php7 }
+dependencies: []
