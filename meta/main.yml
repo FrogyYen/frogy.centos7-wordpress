@@ -1,0 +1,20 @@
+---
+
+galaxy_info:
+  author: Frogy Yen
+  description: Installs wordpress on CentOS 7
+  company:
+  license: license (GPLv2, CC-BY, etc)
+  min_ansible_version: 1.7
+  platforms:
+  - name: EL
+    versions:
+    - 7
+  categories:
+  - development
+  - web
+
+dependencies:
+ - frogy.centos7-nginx
+ - frogy.centos7-mariadb
+ - frogy.centos7-php7

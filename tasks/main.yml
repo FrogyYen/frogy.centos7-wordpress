@@ -1,0 +1,61 @@
+- name: Check if "default.conf" target exists
+  stat: path=/etc/nginx/conf.d/default.conf
+  register: filecheck
+
+- name: Remove "default.conf", if any
+  file: path=/etc/nginx/conf.d/default.conf state=absent
+  when: filecheck.stat.exists
+
+- name: Copy wordpress site conf for nginx
+  template:
+    src: ./templates/nginx-wordpress.conf.j2
+    dest: /etc/nginx/conf.d/nginx-wordpress.conf
+  notify: restart nginx
+
+- name: Add host info
+  lineinfile:
+    dest: /etc/hosts
+    line: "10.0.0.10  {{ hostname }}"
+    state: present
+  when: modify_hostname
+
+- name: Download wordpress tarball
+  get_url:
+    url: "https://tw.wordpress.org/wordpress-{{ wordpress_version }}-zh_TW.tar.gz"
+    dest: /tmp/
+
+- name: Extract wordpress tarball
+  unarchive:
+    src: "/tmp/wordpress-{{ wordpress_version }}-zh_TW.tar.gz"
+    dest: "{{ wordpress_parent_path }}"
+    owner: "{{ wordpress_owner }}"
+    group: "{{ wordpress_group }}"
+    copy: no
+
+- name: Install prerequisite for Ansible's mysql modules
+  yum: name=MySQL-python state=present
+
+- name: Create wordpress db
+  mysql_db:
+    name: "{{ wordpress_db_name }}"
+    login_user: root
+    # login_password: "{{ mysql_root_password }}"
+    state: present
+
+- name: Create wordpress user
+  mysql_user:
+    name:     "{{ wordpress_db_user }}"
+    password: "{{ wordpress_db_password }}"
+    priv:     "{{ wordpress_db_name }}.*:ALL"
+    login_user: root
+    # login_password: "{{ mysql_root_password }}"
+    state: present
+
+
+- name: Set wordpress config
+  template:
+    src: ./templates/wp-config.php.j2
+    dest: "{{ wordpress_path }}/wp-config.php"
+    owner: "{{ wordpress_owner }}"
+    group: "{{ wordpress_group }}"
+  notify: restart nginx
